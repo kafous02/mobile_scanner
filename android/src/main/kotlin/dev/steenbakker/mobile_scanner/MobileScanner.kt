@@ -55,6 +55,7 @@ class MobileScanner(private val activity: Activity, private val textureRegistry:
             "request" -> requestPermission(result)
             "start" -> start(call, result)
             "torch" -> toggleTorch(call, result)
+            "linearZoom" -> setLinearZoom(call, result)
 //            "analyze" -> switchAnalyzeMode(call, result)
             "stop" -> stop(result)
             "analyzeImage" -> analyzeImage(call, result)
@@ -136,6 +137,7 @@ class MobileScanner(private val activity: Activity, private val textureRegistry:
             val facing: Int = call.argument<Int>("facing") ?: 0
             val ratio: Int? = call.argument<Int>("ratio")
             val torch: Boolean = call.argument<Boolean>("torch") ?: false
+            val linearZoom: Float = call.argument<float>("linearZoom") ?: 0.0
             val formats: List<Int>? = call.argument<List<Int>>("formats")
 
             if (formats != null) {
@@ -211,6 +213,7 @@ class MobileScanner(private val activity: Activity, private val textureRegistry:
 
                 // Enable torch if provided
                 camera!!.cameraControl.enableTorch(torch)
+                camera!!.cameraControl.setLinearZoom(linearZoom)
 
                 val resolution = preview!!.resolutionInfo!!.resolution
                 val portrait = camera!!.cameraInfo.sensorRotationDegrees % 180 == 0
@@ -221,6 +224,16 @@ class MobileScanner(private val activity: Activity, private val textureRegistry:
                 result.success(answer)
             }, executor)
         }
+    }
+
+    private fun setLinearZoom(call: MethodCall, result: MethodChannel.Result) {
+        if (camera == null) {
+            result.error(TAG,"Called setLinearZoom() while stopped!", null)
+            return
+        }
+
+        camera!!.camerControl.setLinearZoom(call.arguments)
+        results.success(null)
     }
 
     private fun toggleTorch(call: MethodCall, result: MethodChannel.Result) {

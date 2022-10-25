@@ -45,6 +45,8 @@ class MobileScannerController {
   late final ValueNotifier<CameraFacing> cameraFacingState;
   final Ratio? ratio;
   final bool? torchEnabled;
+  // Double between 0 and 1
+  final double? linearZoom;
   // Whether to return the image buffer with the Barcode event
   final bool returnImage;
 
@@ -64,6 +66,7 @@ class MobileScannerController {
     this.facing = CameraFacing.back,
     this.ratio,
     this.torchEnabled,
+    this.linearZoom,
     this.formats,
     this.onPermissionSet,
     this.autoResume = true,
@@ -175,6 +178,7 @@ class MobileScannerController {
     arguments['facing'] = facing.index;
     if (ratio != null) arguments['ratio'] = ratio;
     if (torchEnabled != null) arguments['torch'] = torchEnabled;
+    if (linearZoom != null) arguments['linearZoom'] = linearZoom;
 
     if (formats != null) {
       if (Platform.isAndroid) {
